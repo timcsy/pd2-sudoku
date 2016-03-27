@@ -1,4 +1,6 @@
+#include <iostream>
 #include "Sudoku.h"
+
 Sudoku::Sudoku()
 {
 	for(int i = 0; i < 9; i++)
@@ -31,18 +33,17 @@ void Sudoku::solve()
 {
 	for(int i = 0; i < 9; i++)
 		for(int j = 0; j < 9; j++)
-			if(map[i][j] != -1) setCell(map[i][j], i, j);
+			if(map[i][j] != -1)
+				setCell(map[i][j], i, j);
 	Sudoku su = *this;
 	switch(backtracking(*this))
 	{
 		case 0:
-			
+			printf("0\n");
 			break;
 		case 1:
-			if(backtracking(su))
-			{
-				
-			}
+			printf("1\n");
+			print();
 			break;
 	}
 }
@@ -86,10 +87,10 @@ int Sudoku::setCell(int n, int row, int col)
 		if(bitmap[n][row][j] == -1)
 			bitmap[n][row][j] = 0;
 	//box
-	int boxRow = (row / 3) * 3;
-	int boxCol = (col / 3) * 3;
-	for(int i = boxRow; i < boxCol + 3; i++)
-		for(int j = boxCol; j < boxCol + 3; j++)
+	int boxRow = (row / 3);
+	int boxCol = (col / 3);
+	for(int i = boxRow * 3; i < boxRow * 3 + 3; i++)
+		for(int j = boxCol * 3; j < boxCol * 3 + 3; j++)
 			if(bitmap[n][i][j] == -1)
 				bitmap[n][i][j] = 0;
 	//cell
@@ -113,7 +114,7 @@ int Sudoku::single()
 					if(getRowNum(0, n, i) == 9) return 0; //conflict
 					if(getColNum(0, n, j) == 9) return 0; //conflict
 					if(getBoxNum(0, n, i/3, j/3) == 9) return 0; //conflict
-					if(bitmap[n][i][col] == -1)
+					if(bitmap[n][i][j] == -1)
 					{
 						if(getRowNum(-1, n, i) == 1)
 						{
@@ -130,6 +131,7 @@ int Sudoku::single()
 							setCell(n, i, j);
 							++changed;
 						}
+					}
 				}
 			}
 		}
@@ -187,8 +189,8 @@ int Sudoku::getColNum(int N, int n, int col)
 int Sudoku::getBoxNum(int N, int n, int boxRow, int boxCol)
 {
 	int boxNum = 0;
-	for(int i = boxRow; i < boxCol + 3; i++)
-		for(int j = boxCol; j < boxCol + 3; j++)
+	for(int i = boxRow * 3; i < boxRow * 3 + 3; i++)
+		for(int j = boxCol * 3; j < boxCol * 3 + 3; j++)
 			if(bitmap[n][i][j] == N) boxNum++;
 	return boxNum;
 }
@@ -199,6 +201,19 @@ void Sudoku::print()
 	{
 		for(int j = 0; j < 8; j++)
 			printf("%d ", map[i][j] + 1);
-		printf("%d\n", map[i][9] + 1);
+		printf("%d\n", map[i][8] + 1);
+	}
+}
+void Sudoku::bitprint()
+{
+	for(int n = 0; n < 9; n++)
+	{
+		printf("n = %d\n", n);
+		for(int i = 0; i < 9; i++)
+		{
+			for(int j = 0; j < 8; j++)
+				printf("%d ", bitmap[n][i][j] + 1);
+			printf("%d\n", bitmap[n][i][8] + 1);
+		}
 	}
 }

@@ -6,5 +6,5 @@ int main()
 {
 	Sudoku su;
 	su.readIn();
-	su.print();
+	su.solve();
 }
