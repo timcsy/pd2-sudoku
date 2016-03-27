@@ -1,6 +1,7 @@
 class Sudoku
 {
 	public:
+		Sudoku();
 		void giveQuestion(); //output 81 digits
 		void readIn(); //input 81 digits
 		void solve(); //output my solved answer
@@ -12,17 +13,18 @@ class Sudoku
 		void transform();
 		static const int sudokuSize = 81;
 	private:
-		int * getRow(int row);
-		int * getCol(int col);
-		int * getBox(int box);
+		int setCell(int n, int row, int col); //0:conflict ; 1:success
 		
-		void setCell(int n, int i, int j);
+		int single(int n); //single test (including hidden single and naked single)
+		void backtracking(Sudoku su, int ij = 0); //the recursive backtracking method
 		
-		void single(int n);
-		void hiddenSingle();
-		void nakedSingle();
-		void backTracking();
+		int * getRowNum(int N); //give the number of given value of a row
+		int * getColNum(int N); //give the number of given value of a column
+		int * getBoxNum(int N); //give the number of given value of a box
 		
-		int map[sudokuSize];
-		signed char map[9][9][9];
+		void print(); //print the sudoku to standard output
+		
+		//The following sudoku number stored is 0~8
+		signed char bitmap[9][9][9]; //-1:unset ; 0:false ; 1:true
+		signed char map[9][9];  //-1:unset ; 0~8:number
 }
