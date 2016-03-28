@@ -45,6 +45,9 @@ void Sudoku::solve()
 			printf("1\n");
 			print();
 			break;
+		case 2:
+			printf("2\n");
+			break;
 	}
 }
 void Sudoku::changeNum(int n1, int n2)
@@ -161,9 +164,28 @@ int Sudoku::backtracking(Sudoku & thisSudoku, int nij)
 						bitmap[n][i][j] = 0; //set the cell false
 						return backtracking(thisSudoku, ++nij); //continue the following cell
 						break;
-					case 1: //if the trial value is right and all cells are complete
-						thisSudoku = su; //give the trail result to the original one
-						return 1;
+					case 1: //if the trial value is right so all su cells are complete
+					{
+						bitmap[n][i][j] = 0;  //set the right trail value false to find if there is another solution
+						Sudoku su2 = thisSudoku; //set another temp sudoku
+						int backtrackingResult = su2.backtracking(su2, ++nij);
+						switch(backtrackingResult)
+						{
+							case 0:
+								thisSudoku = su; //give the trail result to the original one
+								return 1; //up to now, this sudoku has one solution
+								break;
+							case 1:
+								return 2; //this sudoku has two or more solutions
+								break;
+							case 2:
+								return 2; //this sudoku has two or more solutions
+								break;
+						}
+						break;
+					}
+					case 2:
+						return 2; //this sudoku has two or more solutions
 						break;
 				}
 			}
