@@ -1,4 +1,6 @@
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
 #include "Sudoku.h"
 
 Sudoku::Sudoku()
@@ -13,9 +15,28 @@ Sudoku::Sudoku()
 		}
 	}
 }
+
 void Sudoku::giveQuestion()
 {
-	
+	int question[9][9]=
+	{
+		8,0,0,0,0,0,0,0,0,
+		0,0,3,6,0,0,0,0,0,
+		0,7,0,0,9,0,2,0,0,
+		0,5,0,0,0,7,0,0,0,
+		0,0,0,0,4,5,7,0,0,
+		0,0,0,1,0,0,0,3,0,
+		0,0,1,0,0,0,0,6,8,
+		0,0,8,5,0,0,0,1,0,
+		0,9,0,0,0,0,4,0,0
+	};
+	for(int i = 0; i < 9; i++)
+	{
+		for(int j = 0; j < 8; j++)
+			printf("%d ", question[i][j]);
+		printf("%d\n", question[i][8]);
+	}
+	printf("\n");
 }
 void Sudoku::readIn()
 {
@@ -34,8 +55,11 @@ void Sudoku::solve()
 	for(int i = 0; i < 9; i++)
 		for(int j = 0; j < 9; j++)
 			if(map[i][j] != -1)
-				setCell(map[i][j], i, j);
-	Sudoku su = *this;
+				if(setCell(map[i][j], i, j) == 0)
+				{
+					printf("0\n");
+					return;
+				}
 	switch(backtracking(*this))
 	{
 		case 0:
@@ -50,29 +74,86 @@ void Sudoku::solve()
 			break;
 	}
 }
+
 void Sudoku::changeNum(int n1, int n2)
 {
-	
+	Sudoku su = *this;
+	for(int i = 0; i < 9; i++)
+		for(int j = 0; j < 9; j++)
+		{
+			if(map[i][j] == n1)
+				su.setMapCell(n2, i, j);
+			else if(map[i][j] == n2)
+				su.setMapCell(n1, i, j);
+		}
+	*this = su;
 }
 void Sudoku::changeRow(int r1, int r2)
 {
-	
+	Sudoku su = *this;
+	for(int j = 0; j < 9; j++)
+	{
+		for(int i = 0; i < 3; i++)
+		{
+			su.setMapCell(map[r1 * 3 + i][j], (r2 * 3 + i), j);
+			su.setMapCell(map[r2 * 3 + i][j], (r1 * 3 + i), j);
+		}
+	}
+	*this = su;
 }
 void Sudoku::changeCol(int c1,int c2)
 {
-	
+	Sudoku su = *this;
+	for(int i = 0; i < 9; i++)
+	{
+		for(int j = 0; j < 3; j++)
+		{
+			su.setMapCell(map[i][(c1 * 3 + j)], i, (c2 * 3 + j));
+			su.setMapCell(map[i][(c2 * 3 + j)], i, (c1 * 3 + j));
+		}
+	}
+	*this = su;
 }
 void Sudoku::rotate(int n)
 {
-	
+	//i,j -> (i - 4),(j - 4) -> (j - 4),-(i - 4) -> (j - 4) + 4,-(i - 4) + 4 -> j,(8 - i)
+	Sudoku su = *this;
+	for(int i = 0; i < 9; i++)
+		for(int j = 0; j < 9; j++)
+		{
+			if((n % 4) == 1)
+				su.setMapCell(map[i][j], j, (8 - i));
+			else if((n % 4) == 2)
+				su.setMapCell(map[i][j], (8 - i), (8 - j));
+			else if((n % 4) == 3)
+				su.setMapCell(map[i][j], (8 - j), i);
+		}
+	*this = su;
 }
 void Sudoku::flip(int n)
 {
-	
+	//horizontally(1): i,j -> (i - 4),(j - 4) -> -(i - 4),(j - 4) -> -(i - 4) + 4,(j - 4) + 4 -> (8 - i),j
+	Sudoku su;
+	for(int i = 0; i < 9; i++)
+		for(int j = 0; j < 9; j++)
+		{
+			if(n == 0)
+				su.setMapCell(map[i][j], i, (8 - j));
+			else if(n == 1)
+				su.setMapCell(map[i][j], (8 - i), j);
+		}
+	*this = su;
 }
 void Sudoku::transform()
 {
-	
+	readIn();
+	srand(time(NULL));
+	changeNum(rand() % 9, rand() % 9);
+	changeRow(rand() % 3, rand() % 3);
+	changeCol(rand() % 3, rand() % 3);
+	rotate(rand() % 4);
+	flip(rand() % 2);
+	print();
 }
 
 int Sudoku::setCell(int n, int row, int col)
@@ -100,6 +181,10 @@ int Sudoku::setCell(int n, int row, int col)
 	for(int k = 0; k < 9; k++)
 		if(bitmap[k][row][col] == -1) bitmap[k][row][col] = 0;
 	return 1;
+}
+void Sudoku::setMapCell(int n, int row, int col)
+{
+	map[row][col] = n;
 }
 
 int Sudoku::single()
@@ -141,7 +226,6 @@ int Sudoku::single()
 		if(changed == 0) return 1; //if single test makes no change, leave
 	}
 }
-
 int Sudoku::backtracking(Sudoku & thisSudoku, int nij)
 {
 	if(nij == 729) return 1; //if all cells are complete, leave
@@ -200,14 +284,12 @@ int Sudoku::getRowNum(int N, int n, int row)
 	for(int j = 0; j < 9; j++) if(bitmap[n][row][j] == N) rowNum++;
 	return rowNum;
 }
-
 int Sudoku::getColNum(int N, int n, int col)
 {
 	int colNum = 0;
 	for(int i = 0; i < 9; i++) if(bitmap[n][i][col] == N) colNum++;
 	return colNum;
 }
-
 int Sudoku::getBoxNum(int N, int n, int boxRow, int boxCol)
 {
 	int boxNum = 0;
@@ -225,6 +307,7 @@ void Sudoku::print()
 			printf("%d ", map[i][j] + 1);
 		printf("%d\n", map[i][8] + 1);
 	}
+	printf("\n");
 }
 void Sudoku::bitprint()
 {
@@ -238,4 +321,5 @@ void Sudoku::bitprint()
 			printf("%d\n", bitmap[n][i][8] + 1);
 		}
 	}
+	printf("\n");
 }
