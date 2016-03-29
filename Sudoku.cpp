@@ -50,6 +50,7 @@ void Sudoku::readIn()
 		}
 	}
 }
+
 void Sudoku::solve()
 {
 	for(int i = 0; i < 9; i++)
@@ -74,88 +75,6 @@ void Sudoku::solve()
 			break;
 	}
 }
-
-void Sudoku::changeNum(int n1, int n2)
-{
-	Sudoku su = *this;
-	for(int i = 0; i < 9; i++)
-		for(int j = 0; j < 9; j++)
-		{
-			if(map[i][j] == n1)
-				su.setMapCell(n2, i, j);
-			else if(map[i][j] == n2)
-				su.setMapCell(n1, i, j);
-		}
-	*this = su;
-}
-void Sudoku::changeRow(int r1, int r2)
-{
-	Sudoku su = *this;
-	for(int j = 0; j < 9; j++)
-	{
-		for(int i = 0; i < 3; i++)
-		{
-			su.setMapCell(map[r1 * 3 + i][j], (r2 * 3 + i), j);
-			su.setMapCell(map[r2 * 3 + i][j], (r1 * 3 + i), j);
-		}
-	}
-	*this = su;
-}
-void Sudoku::changeCol(int c1,int c2)
-{
-	Sudoku su = *this;
-	for(int i = 0; i < 9; i++)
-	{
-		for(int j = 0; j < 3; j++)
-		{
-			su.setMapCell(map[i][(c1 * 3 + j)], i, (c2 * 3 + j));
-			su.setMapCell(map[i][(c2 * 3 + j)], i, (c1 * 3 + j));
-		}
-	}
-	*this = su;
-}
-void Sudoku::rotate(int n)
-{
-	//i,j -> (i - 4),(j - 4) -> (j - 4),-(i - 4) -> (j - 4) + 4,-(i - 4) + 4 -> j,(8 - i)
-	Sudoku su = *this;
-	for(int i = 0; i < 9; i++)
-		for(int j = 0; j < 9; j++)
-		{
-			if((n % 4) == 1)
-				su.setMapCell(map[i][j], j, (8 - i));
-			else if((n % 4) == 2)
-				su.setMapCell(map[i][j], (8 - i), (8 - j));
-			else if((n % 4) == 3)
-				su.setMapCell(map[i][j], (8 - j), i);
-		}
-	*this = su;
-}
-void Sudoku::flip(int n)
-{
-	//horizontally(1): i,j -> (i - 4),(j - 4) -> -(i - 4),(j - 4) -> -(i - 4) + 4,(j - 4) + 4 -> (8 - i),j
-	Sudoku su;
-	for(int i = 0; i < 9; i++)
-		for(int j = 0; j < 9; j++)
-		{
-			if(n == 0)
-				su.setMapCell(map[i][j], i, (8 - j));
-			else if(n == 1)
-				su.setMapCell(map[i][j], (8 - i), j);
-		}
-	*this = su;
-}
-void Sudoku::transform()
-{
-	readIn();
-	srand(time(NULL));
-	changeNum(rand() % 9, rand() % 9);
-	changeRow(rand() % 3, rand() % 3);
-	changeCol(rand() % 3, rand() % 3);
-	rotate(rand() % 4);
-	flip(rand() % 2);
-	print();
-}
-
 int Sudoku::setCell(int n, int row, int col)
 {
 	//self
@@ -182,11 +101,6 @@ int Sudoku::setCell(int n, int row, int col)
 		if(bitmap[k][row][col] == -1) bitmap[k][row][col] = 0;
 	return 1;
 }
-void Sudoku::setMapCell(int n, int row, int col)
-{
-	map[row][col] = n;
-}
-
 int Sudoku::single()
 {
 	for(;;) //infinite loop
@@ -322,4 +236,89 @@ void Sudoku::bitprint()
 		}
 	}
 	printf("\n");
+}
+
+void Sudoku::setMapCell(int n, int row, int col)
+{
+	map[row][col] = n;
+}
+void Sudoku::changeNum(int n1, int n2)
+{
+	--n1; --n2;
+	Sudoku su = *this;
+	for(int i = 0; i < 9; i++)
+		for(int j = 0; j < 9; j++)
+		{
+			if(map[i][j] == n1)
+				su.setMapCell(n2, i, j);
+			else if(map[i][j] == n2)
+				su.setMapCell(n1, i, j);
+		}
+	*this = su;
+}
+void Sudoku::changeRow(int r1, int r2)
+{
+	Sudoku su = *this;
+	for(int j = 0; j < 9; j++)
+	{
+		for(int i = 0; i < 3; i++)
+		{
+			su.setMapCell(map[r1 * 3 + i][j], (r2 * 3 + i), j);
+			su.setMapCell(map[r2 * 3 + i][j], (r1 * 3 + i), j);
+		}
+	}
+	*this = su;
+}
+void Sudoku::changeCol(int c1,int c2)
+{
+	Sudoku su = *this;
+	for(int i = 0; i < 9; i++)
+	{
+		for(int j = 0; j < 3; j++)
+		{
+			su.setMapCell(map[i][(c1 * 3 + j)], i, (c2 * 3 + j));
+			su.setMapCell(map[i][(c2 * 3 + j)], i, (c1 * 3 + j));
+		}
+	}
+	*this = su;
+}
+void Sudoku::rotate(int n)
+{
+	//i,j -> (i - 4),(j - 4) -> (j - 4),-(i - 4) -> (j - 4) + 4,-(i - 4) + 4 -> j,(8 - i)
+	Sudoku su = *this;
+	for(int i = 0; i < 9; i++)
+		for(int j = 0; j < 9; j++)
+		{
+			if((n % 4) == 1)
+				su.setMapCell(map[i][j], j, (8 - i));
+			else if((n % 4) == 2)
+				su.setMapCell(map[i][j], (8 - i), (8 - j));
+			else if((n % 4) == 3)
+				su.setMapCell(map[i][j], (8 - j), i);
+		}
+	*this = su;
+}
+void Sudoku::flip(int n)
+{
+	//horizontally(1): j,i -> (j - 4),(i - 4) -> -(j - 4),(i - 4) -> -(j - 4) + 4,(i - 4) + 4 -> i,(8 - j)
+	Sudoku su;
+	for(int i = 0; i < 9; i++)
+		for(int j = 0; j < 9; j++)
+		{
+			if(n == 0)
+				su.setMapCell(map[i][j], (8 - i), j);
+			else if(n == 1)
+				su.setMapCell(map[i][j], i, (8 - j));
+		}
+	*this = su;
+}
+void Sudoku::transform()
+{
+	srand(time(NULL));
+	changeNum(rand() % 9 + 1, rand() % 9 + 1);
+	changeRow(rand() % 3, rand() % 3);
+	changeCol(rand() % 3, rand() % 3);
+	rotate(rand() % 4);
+	flip(rand() % 2);
+	print();
 }
