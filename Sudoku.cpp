@@ -14,6 +14,7 @@ Sudoku::Sudoku()
 			map[i][j] = -1;
 		}
 	}
+	for(int i = 0; i < 729; i++) visited[i] = 0;
 }
 
 void Sudoku::giveQuestion()
@@ -140,9 +141,11 @@ int Sudoku::single()
 		if(changed == 0) return 1; //if single test makes no change, leave
 	}
 }
-int Sudoku::backtracking(Sudoku & thisSudoku, int nij)
+int Sudoku::backtracking(Sudoku & thisSudoku)
 {
-	if(nij == 729) return 1; //if all cells are complete, leave
+	int nij = getPossible();
+	if(nij == -1) return 1; //if all cells are complete, leave
+	visited[nij] = 1;
 	int n = nij / 81, i = (nij % 81) / 9, j = nij % 9; //set n, i, j w.r.t nij
 	int singleResult = 1; //Assume the sudoku passes single test if the cell has been set already
 	if(bitmap[n][i][j] == -1) singleResult = single(); //if cell is unset, use single test first
@@ -156,17 +159,17 @@ int Sudoku::backtracking(Sudoku & thisSudoku, int nij)
 			{
 				Sudoku su = thisSudoku; //set temp sudoku
 				su.setCell(n, i, j);  //give trial value
-				switch(su.backtracking(su, ++nij)) //check the trial value
+				switch(su.backtracking(su)) //check the trial value
 				{
 					case 0: //if the trial value is wrong
 						bitmap[n][i][j] = 0; //set the cell false
-						return backtracking(thisSudoku, ++nij); //continue the following cell
+						return backtracking(thisSudoku); //continue the following cell
 						break;
 					case 1: //if the trial value is right so all su cells are complete
 					{
 						bitmap[n][i][j] = 0;  //set the right trail value false to find if there is another solution
 						Sudoku su2 = thisSudoku; //set another temp sudoku
-						int backtrackingResult = su2.backtracking(su2, ++nij);
+						int backtrackingResult = su2.backtracking(su2);
 						switch(backtrackingResult)
 						{
 							case 0:
@@ -187,7 +190,7 @@ int Sudoku::backtracking(Sudoku & thisSudoku, int nij)
 						break;
 				}
 			}
-			else return backtracking(thisSudoku, ++nij); //if the cell is set, continue the following cell
+			else return backtracking(thisSudoku); //if the cell is set, continue the following cell
 			break;
 	}
 }
@@ -211,6 +214,35 @@ int Sudoku::getBoxNum(int N, int n, int boxRow, int boxCol)
 		for(int j = boxCol * 3; j < boxCol * 3 + 3; j++)
 			if(bitmap[n][i][j] == N) boxNum++;
 	return boxNum;
+}
+int Sudoku::getCellNum(int N, int row, int col)
+{
+	int cellNum = 0;
+	for(int n = 0; n < 9; n++) if(bitmap[n][row][col] == N) cellNum++;
+	return cellNum;
+}
+int Sudoku::getPossible()
+{
+	int minCell, minValue = 10000;
+	for(int n = 0; n < 9; n++)
+	{
+		for(int i = 0; i < 9; i++)
+		{
+			for(int j = 0; j < 9; j++)
+			{
+				if(visited[n * 81 + i * 9 + 1] == 0 && bitmap[n][i][j] == -1)
+				{
+					int value = getRowNum(-1, n, i)*getColNum(-1, n, j)*getBoxNum(-1, n, i/3, j/3)*getCellNum(-1, i, j);
+					if(value < minValue)
+					{
+						minCell = n * 81 + i * 9 + j;
+						minValue = value;
+					}
+				}
+			}
+		}
+	}
+	return (minValue == 10000) ? -1 : minCell;
 }
 
 void Sudoku::print()

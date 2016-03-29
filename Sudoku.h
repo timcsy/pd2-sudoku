@@ -17,16 +17,19 @@ class Sudoku
 		void setMapCell(int n, int row, int col);
 		
 		int single(); //single test (including hidden single and naked single)
-		int backtracking(Sudoku & thisSudoku, int nij = 0); //the recursive backtracking method
+		int backtracking(Sudoku & thisSudoku); //the recursive backtracking method
 		
 		int getRowNum(int N, int n, int row); //give the number of given value of a row
 		int getColNum(int N, int n, int col); //give the number of given value of a column
 		int getBoxNum(int N, int n, int boxRow, int boxCol); //give the number of given value of a box
-		
+		int getCellNum(int N, int row, int col);
+		int getPossible();
+
 		void print(); //print the sudoku to standard output
 		void bitprint();  //print the sudoku bitmap to standard output
 		
 		//The following sudoku number stored is 0~8
 		signed char bitmap[9][9][9]; //-1:unset ; 0:false ; 1:true
 		signed char map[9][9];  //-1:unset ; 0~8:number
+		bool visited[729];
 };
