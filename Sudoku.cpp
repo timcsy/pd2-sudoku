@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <ctime>
 #include "Sudoku.h"
-
+int times = 0;
 Sudoku::Sudoku()
 {
 	for(int i = 0; i < 9; i++)
@@ -66,13 +66,16 @@ void Sudoku::solve()
 	{
 		case 0:
 			printf("0\n");
+			printf("single time = %d\n", times);
 			break;
 		case 1:
 			printf("1\n");
 			print();
+			printf("single time = %d\n", times);
 			break;
 		case 2:
 			printf("2\n");
+			printf("single time = %d\n", times);
 			break;
 	}
 }
@@ -113,6 +116,7 @@ int Sudoku::single()
 			{
 				for(int j = 0; j < 9; j++)
 				{
+					++times;
 					//Conflict happens if all the blocks are 0
 					if(getRowNum(0, n, i) == 9) return 0; //conflict
 					if(getColNum(0, n, j) == 9) return 0; //conflict
@@ -130,6 +134,11 @@ int Sudoku::single()
 							++changed;
 						}
 						else if(getBoxNum(-1, n, i/3, j/3) == 1)
+						{
+							setCell(n, i, j);
+							++changed;
+						}
+						else if(getCellNum(-1, i, j) == 1)
 						{
 							setCell(n, i, j);
 							++changed;
@@ -223,7 +232,8 @@ int Sudoku::getCellNum(int N, int row, int col)
 }
 int Sudoku::getPossible()
 {
-	int minCell, minValue = 10000;
+	int minCell;
+	double minValue = 10000000;
 	for(int n = 0; n < 9; n++)
 	{
 		for(int i = 0; i < 9; i++)
@@ -232,7 +242,39 @@ int Sudoku::getPossible()
 			{
 				if(visited[n * 81 + i * 9 + 1] == 0 && bitmap[n][i][j] == -1)
 				{
-					int value = getRowNum(-1, n, i)*getColNum(-1, n, j)*getBoxNum(-1, n, i/3, j/3)*getCellNum(-1, i, j);
+					//int value = getRowNum(-1, n, i)*getColNum(-1, n, j)*getBoxNum(-1, n, i/3, j/3)*getCellNum(-1, i, j);
+					//int value =  n * 81 + i * 9 + j;
+					//int value = getRowNum(-1, n, i);
+					//int value = getColNum(-1, n, j);
+					//int value = getBoxNum(-1, n, i/3, j/3);
+					//int value = getCellNum(-1, i, j);
+					//int value = getRowNum(-1, n, i)*getColNum(-1, n, j)*getBoxNum(-1, n, i/3, j/3)+getCellNum(-1, i, j);
+					/*int rowNum = getRowNum(-1, n, i), colNum = getColNum(-1, n, j), boxNum = getBoxNum(-1, n, i/3, j/3), cellNum = getCellNum(-1, i, j);
+					double value = 0;
+					if((rowNum-1)*(colNum-1)*(boxNum-1) != 0) value += 1000000;
+					double value1 = rowNum;
+					double tempvalue = colNum;
+					if(tempvalue < value1) value1 = tempvalue;
+					tempvalue = boxNum;
+					if(tempvalue < value1) value1 = tempvalue;
+					double value2 = rowNum*colNum;
+					tempvalue = colNum*boxNum;
+					if(tempvalue < value2) value2 = tempvalue;
+					tempvalue = boxNum*rowNum;
+					if(tempvalue < value2) value2 = tempvalue;
+					double value3 = rowNum*colNum*boxNum;
+					value += value1 *10000 + value2 *100 + value3 /10 + cellNum / 100;*/
+					int value = 0;
+					int rowNum = getRowNum(-1, n, i), colNum = getColNum(-1, n, j), boxNum = getBoxNum(-1, n, i/3, j/3), cellNum = getCellNum(-1, i, j);
+					if((rowNum-1)*(colNum-1)*(boxNum-1)*(cellNum-1) != 0) value += 10;
+					int value1 = rowNum;
+					int tempvalue = colNum;
+					if(tempvalue < value1) value1 = tempvalue;
+					tempvalue = boxNum;
+					if(tempvalue < value1) value1 = tempvalue;
+					tempvalue = cellNum;
+					if(tempvalue < value1) value1 = tempvalue;
+					value += value1;
 					if(value < minValue)
 					{
 						minCell = n * 81 + i * 9 + j;
@@ -242,7 +284,7 @@ int Sudoku::getPossible()
 			}
 		}
 	}
-	return (minValue == 10000) ? -1 : minCell;
+	return (minValue == 10000000) ? -1 : minCell;
 }
 
 void Sudoku::print()
