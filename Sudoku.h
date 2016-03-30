@@ -13,7 +13,8 @@ class Sudoku
 		void transform();
 		
 	private:
-		int setCell(int n, int row, int col); //0:conflict ; 1:success
+		int setTrue(int n, int row, int col); //0:conflict ; 1:success
+		int setFalse(int n, int row, int col); //0:conflict ; 1:success
 		void setMapCell(int n, int row, int col);
 		
 		int single(); //single test (including hidden single and naked single)

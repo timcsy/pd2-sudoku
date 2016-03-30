@@ -57,7 +57,7 @@ void Sudoku::solve()
 	for(int i = 0; i < 9; i++)
 		for(int j = 0; j < 9; j++)
 			if(map[i][j] != -1)
-				if(setCell(map[i][j], i, j) == 0)
+				if(setTrue(map[i][j], i, j) == 0)
 				{
 					printf("0\n");
 					return;
@@ -79,7 +79,7 @@ void Sudoku::solve()
 			break;
 	}
 }
-int Sudoku::setCell(int n, int row, int col)
+int Sudoku::setTrue(int n, int row, int col)
 {
 	//self
 	map[row][col] = n;
@@ -105,6 +105,13 @@ int Sudoku::setCell(int n, int row, int col)
 		if(bitmap[k][row][col] == -1) bitmap[k][row][col] = 0;
 	return 1;
 }
+int Sudoku::setFalse(int n, int row, int col)
+{
+	//self
+	if(bitmap[n][row][col] == -1) bitmap[n][row][col] = 0;
+	else return 0;
+	return 1;
+}
 int Sudoku::single()
 {
 	for(;;) //infinite loop
@@ -125,22 +132,22 @@ int Sudoku::single()
 					{
 						if(getRowNum(-1, n, i) == 1)
 						{
-							setCell(n, i, j);
+							setTrue(n, i, j);
 							++changed;
 						}
 						else if(getColNum(-1, n, j) == 1)
 						{
-							setCell(n, i, j);
+							setTrue(n, i, j);
 							++changed;
 						}
 						else if(getBoxNum(-1, n, i/3, j/3) == 1)
 						{
-							setCell(n, i, j);
+							setTrue(n, i, j);
 							++changed;
 						}
 						else if(getCellNum(-1, i, j) == 1)
 						{
-							setCell(n, i, j);
+							setTrue(n, i, j);
 							++changed;
 						}
 					}
@@ -167,16 +174,16 @@ int Sudoku::backtracking(Sudoku & thisSudoku)
 			if(bitmap[n][i][j] == -1) //if the cell is unset
 			{
 				Sudoku su = thisSudoku; //set temp sudoku
-				su.setCell(n, i, j);  //give trial value
+				su.setTrue(n, i, j);  //give trial value
 				switch(su.backtracking(su)) //check the trial value
 				{
 					case 0: //if the trial value is wrong
-						bitmap[n][i][j] = 0; //set the cell false
+						setFalse(n, i, j); //set the cell false
 						return backtracking(thisSudoku); //continue the following cell
 						break;
 					case 1: //if the trial value is right so all su cells are complete
 					{
-						bitmap[n][i][j] = 0;  //set the right trail value false to find if there is another solution
+						setFalse(n, i, j);  //set the right trail value false to find if there is another solution
 						Sudoku su2 = thisSudoku; //set another temp sudoku
 						int backtrackingResult = su2.backtracking(su2);
 						switch(backtrackingResult)
