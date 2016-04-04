@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <ctime>
 #include "Sudoku.h"
+#include "Clock.h"
 int times = 0;
 Sudoku::Sudoku()
 {
@@ -128,6 +129,7 @@ int Sudoku::single()
 					if(getRowNum(0, n, i) == 9) return 0; //conflict
 					if(getColNum(0, n, j) == 9) return 0; //conflict
 					if(getBoxNum(0, n, i/3, j/3) == 9) return 0; //conflict
+					if(getCellNum(0, i, j) == 9) return 0; //conflict
 					if(bitmap[n][i][j] == -1)
 					{
 						if(getRowNum(-1, n, i) == 1)
@@ -402,4 +404,13 @@ void Sudoku::transform()
 	rotate(rand() % 4);
 	flip(rand() % 2);
 	print();
+}
+
+void Sudoku::start()
+{
+	timmer.start();
+}
+void Sudoku::finish()
+{
+	printf("using %f seconds\n", timmer.getElapsedTime());
 }

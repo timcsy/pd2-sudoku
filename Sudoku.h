@@ -1,3 +1,5 @@
+#include "Clock.h"
+
 class Sudoku
 {
 	public:
@@ -11,6 +13,8 @@ class Sudoku
 		void rotate(int n);
 		void flip(int n);
 		void transform();
+		void start();
+		void finish();
 		
 	private:
 		int setTrue(int n, int row, int col); //0:conflict ; 1:success
@@ -33,4 +37,6 @@ class Sudoku
 		signed char bitmap[9][9][9]; //-1:unset ; 0:false ; 1:true
 		signed char map[9][9];  //-1:unset ; 0~8:number
 		bool visited[729];
+		
+		Clock timmer;
 };
