@@ -3,7 +3,7 @@
 #include <ctime>
 #include "Sudoku.h"
 #include "Clock.h"
-int times = 0;
+
 Sudoku::Sudoku()
 {
 	for(int i = 0; i < 9; i++)
@@ -20,23 +20,30 @@ Sudoku::Sudoku()
 
 void Sudoku::giveQuestion()
 {
-	int question[9][9]=
+	int question[14][9][9]=
 	{
-		8,0,0,0,0,0,0,0,0,
-		0,0,3,6,0,0,0,0,0,
-		0,7,0,0,9,0,2,0,0,
-		0,5,0,0,0,7,0,0,0,
-		0,0,0,0,4,5,7,0,0,
-		0,0,0,1,0,0,0,3,0,
-		0,0,1,0,0,0,0,6,8,
-		0,0,8,5,0,0,0,1,0,
-		0,9,0,0,0,0,4,0,0
+		{8,0,0,0,0,0,0,0,0,0,0,3,6,0,0,0,0,0,0,7,0,0,9,0,2,0,0,0,5,0,0,0,7,0,0,0,0,0,0,0,4,5,7,0,0,0,0,0,1,0,0,0,3,0,0,0,1,0,0,0,0,6,8,0,0,8,5,0,0,0,1,0,0,9,0,0,0,0,4,0,0},
+		{0,0,0,0,0,0,0,1,2,0,0,0,0,0,0,0,0,3,0,0,2,3,0,0,4,0,0,0,0,1,8,0,0,0,0,5,0,6,0,0,7,0,8,0,0,0,0,0,0,0,9,0,0,0,0,0,8,5,0,0,0,0,0,9,0,0,0,4,0,5,0,0,4,7,0,0,0,6,0,0,0},
+		{6,0,2,0,5,0,0,0,0,0,0,0,0,0,3,0,4,0,0,0,0,0,0,0,0,0,0,4,3,0,0,0,8,0,0,0,0,1,0,0,0,0,2,0,0,0,0,0,0,0,0,7,0,0,5,0,0,2,7,0,0,0,0,0,0,0,0,0,0,0,8,1,0,0,0,6,0,0,0,0,0},
+		{0,6,9,0,0,0,0,0,0,0,0,0,0,4,0,0,3,0,0,8,0,0,0,0,0,0,0,0,0,0,8,0,0,6,1,0,4,0,0,0,0,0,9,0,0,5,0,0,0,2,0,0,0,0,2,0,0,9,0,0,0,0,5,0,0,0,6,0,1,0,0,0,0,0,0,0,0,0,0,0,0},
+		{6,0,0,3,5,0,0,0,0,2,0,0,0,0,0,0,8,0,0,0,0,0,0,0,0,0,1,5,0,0,4,0,0,3,0,0,0,0,0,2,0,1,0,7,0,0,0,0,0,0,0,0,0,0,0,1,7,0,0,0,0,0,0,0,0,0,0,9,0,5,0,0,0,8,0,0,0,0,0,0,0},
+		{7,0,0,1,0,0,0,0,0,0,0,0,7,0,0,3,0,0,0,0,0,0,0,8,4,0,0,2,0,0,0,0,0,0,5,0,0,0,0,0,3,0,6,0,0,1,0,0,0,0,0,0,0,0,0,6,0,0,0,0,0,1,0,0,3,0,0,4,0,0,0,0,0,0,0,5,0,0,0,7,0},
+		{7,2,0,6,1,0,0,0,0,0,0,0,0,0,2,0,0,5,0,0,0,0,0,0,0,9,0,0,1,5,0,0,0,2,0,0,0,0,0,9,3,0,0,0,0,0,0,0,0,0,0,0,4,0,3,0,0,8,0,0,0,0,0,0,0,0,0,0,0,1,0,0,9,0,0,0,0,0,0,0,0},
+		{0,0,0,0,6,0,0,0,8,0,4,0,3,0,0,0,0,0,0,1,0,0,0,0,5,0,0,0,0,0,1,0,5,0,4,0,6,0,0,0,0,0,2,0,0,7,0,0,0,0,3,0,0,0,2,0,0,0,7,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,6,0,0},
+		{0,0,0,0,1,5,0,0,9,7,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,3,8,9,0,7,0,0,0,5,0,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,0,0,0,0,0,3,2,0,1,0,0,0,0,0,0,5,0,0,9,0,6,0,0,0,0,0},
+		{0,0,0,0,1,0,4,0,7,0,2,0,3,0,0,0,0,0,0,6,0,0,0,0,0,0,8,0,3,0,2,0,0,0,0,0,5,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,5,0,0,0,0,1,0,0,0,0,0,0,8,0,0,0,0,6,0,0,0,2,0},
+		{0,0,0,0,2,5,0,1,0,0,3,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,4,0,3,0,0,6,0,0,0,7,0,0,0,0,4,0,0,5,0,0,0,0,0,0,0,0,8,0,0,6,0,0,0,0,0,0,0,0,4,0,0,3,0,0,1,0,0,0,0,0,0,2,0},
+		{0,3,1,0,0,0,0,0,5,0,0,0,8,0,0,0,2,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,1,0,0,7,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,8,3,0,0,0,0,3,1,9,0,0,6,4,0,0,0,0,0,0,0,0,0,0,0,5,0,0,0,0},
+		{0,8,0,0,9,0,1,0,0,6,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,9,0,8,0,0,0,4,0,3,0,0,0,0,0,0,6,0,0,0,0,0,8,0,1,0,0,0,0,0,0,0,0,0,7,0,0,0,2,0,5,9,0,0,0,0,0,0,0},
+		{1,0,0,5,0,0,3,0,0,0,0,0,3,0,6,0,0,0,2,0,0,0,0,0,0,0,0,6,0,0,0,0,0,0,0,2,0,0,0,0,3,0,0,4,0,0,0,0,7,0,0,0,0,0,0,0,3,0,0,0,7,8,0,0,4,0,0,1,2,0,0,0,0,0,0,0,0,0,0,0,0}
 	};
+	srand(time(NULL));
+	int N = rand() % 14;
 	for(int i = 0; i < 9; i++)
 	{
 		for(int j = 0; j < 8; j++)
-			printf("%d ", question[i][j]);
-		printf("%d\n", question[i][8]);
+			printf("%d ", question[N][i][j]);
+		printf("%d\n", question[N][i][8]);
 	}
 	printf("\n");
 }
@@ -67,16 +74,13 @@ void Sudoku::solve()
 	{
 		case 0:
 			printf("0\n");
-			printf("single time = %d\n", times);
 			break;
 		case 1:
 			printf("1\n");
 			print();
-			printf("single time = %d\n", times);
 			break;
 		case 2:
 			printf("2\n");
-			printf("single time = %d\n", times);
 			break;
 	}
 }
@@ -124,15 +128,19 @@ int Sudoku::single()
 			{
 				for(int j = 0; j < 9; j++)
 				{
-					++times;
 					//Conflict happens if all the blocks are 0
+					if(getBoxNum(0, n, i/3, j/3) == 9) return 0; //conflict
 					if(getRowNum(0, n, i) == 9) return 0; //conflict
 					if(getColNum(0, n, j) == 9) return 0; //conflict
-					if(getBoxNum(0, n, i/3, j/3) == 9) return 0; //conflict
 					if(getCellNum(0, i, j) == 9) return 0; //conflict
 					if(bitmap[n][i][j] == -1)
 					{
-						if(getRowNum(-1, n, i) == 1)
+						if(getBoxNum(-1, n, i/3, j/3) == 1)
+						{
+							setTrue(n, i, j);
+							++changed;
+						}
+						else if(getRowNum(-1, n, i) == 1)
 						{
 							setTrue(n, i, j);
 							++changed;
@@ -142,11 +150,7 @@ int Sudoku::single()
 							setTrue(n, i, j);
 							++changed;
 						}
-						else if(getBoxNum(-1, n, i/3, j/3) == 1)
-						{
-							setTrue(n, i, j);
-							++changed;
-						}
+						
 						else if(getCellNum(-1, i, j) == 1)
 						{
 							setTrue(n, i, j);
@@ -241,8 +245,8 @@ int Sudoku::getCellNum(int N, int row, int col)
 }
 int Sudoku::getPossible()
 {
-	int minCell;
-	double minValue = 10000000;
+	int minBit;
+	double minValue = 1000;
 	for(int n = 0; n < 9; n++)
 	{
 		for(int i = 0; i < 9; i++)
@@ -251,31 +255,12 @@ int Sudoku::getPossible()
 			{
 				if(visited[n * 81 + i * 9 + 1] == 0 && bitmap[n][i][j] == -1)
 				{
-					//int value = getRowNum(-1, n, i)*getColNum(-1, n, j)*getBoxNum(-1, n, i/3, j/3)*getCellNum(-1, i, j);
-					//int value =  n * 81 + i * 9 + j;
-					//int value = getRowNum(-1, n, i);
-					//int value = getColNum(-1, n, j);
-					//int value = getBoxNum(-1, n, i/3, j/3);
-					//int value = getCellNum(-1, i, j);
-					//int value = getRowNum(-1, n, i)*getColNum(-1, n, j)*getBoxNum(-1, n, i/3, j/3)+getCellNum(-1, i, j);
-					/*int rowNum = getRowNum(-1, n, i), colNum = getColNum(-1, n, j), boxNum = getBoxNum(-1, n, i/3, j/3), cellNum = getCellNum(-1, i, j);
-					double value = 0;
-					if((rowNum-1)*(colNum-1)*(boxNum-1) != 0) value += 1000000;
-					double value1 = rowNum;
-					double tempvalue = colNum;
-					if(tempvalue < value1) value1 = tempvalue;
-					tempvalue = boxNum;
-					if(tempvalue < value1) value1 = tempvalue;
-					double value2 = rowNum*colNum;
-					tempvalue = colNum*boxNum;
-					if(tempvalue < value2) value2 = tempvalue;
-					tempvalue = boxNum*rowNum;
-					if(tempvalue < value2) value2 = tempvalue;
-					double value3 = rowNum*colNum*boxNum;
-					value += value1 *10000 + value2 *100 + value3 /10 + cellNum / 100;*/
+					//setting weight
 					int value = 0;
 					int rowNum = getRowNum(-1, n, i), colNum = getColNum(-1, n, j), boxNum = getBoxNum(-1, n, i/3, j/3), cellNum = getCellNum(-1, i, j);
+					//The first priority is those who have only one unset bit
 					if((rowNum-1)*(colNum-1)*(boxNum-1)*(cellNum-1) != 0) value += 10;
+					//The second priority is regions who have less unset
 					int value1 = rowNum;
 					int tempvalue = colNum;
 					if(tempvalue < value1) value1 = tempvalue;
@@ -284,16 +269,18 @@ int Sudoku::getPossible()
 					tempvalue = cellNum;
 					if(tempvalue < value1) value1 = tempvalue;
 					value += value1;
+					//find the least weight, and give the corresponding bit
 					if(value < minValue)
 					{
-						minCell = n * 81 + i * 9 + j;
+						minBit = n * 81 + i * 9 + j;
 						minValue = value;
 					}
 				}
 			}
 		}
 	}
-	return (minValue == 10000000) ? -1 : minCell;
+	//if the bit is visited or set, return -1, else return the minimum bit position
+	return (minValue == 1000) ? -1 : minBit;
 }
 
 void Sudoku::print()

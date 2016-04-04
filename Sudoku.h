@@ -27,8 +27,8 @@ class Sudoku
 		int getRowNum(int N, int n, int row); //give the number of given value of a row
 		int getColNum(int N, int n, int col); //give the number of given value of a column
 		int getBoxNum(int N, int n, int boxRow, int boxCol); //give the number of given value of a box
-		int getCellNum(int N, int row, int col);
-		int getPossible();
+		int getCellNum(int N, int row, int col); //give the number of given value of a cell
+		int getPossible(); //give the highest priority cell
 
 		void print(); //print the sudoku to standard output
 		void bitprint();  //print the sudoku bitmap to standard output
