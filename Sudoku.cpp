@@ -16,6 +16,41 @@ Sudoku::Sudoku()
 		}
 	}
 	for(int i = 0; i < 729; i++) visited[i] = 0;
+	for(int n = 0; n < 9; n++)
+	{
+		for(int boxRow = 0; boxRow < 9; boxRow++)
+		{
+			for(int boxCol = 0; boxCol < 9; boxCol++)
+			{
+				boxNum[0][n][boxRow][boxCol] = 0;
+				boxNum[1][n][boxRow][boxCol] = 9;
+			}
+		}
+	}
+	for(int n = 0; n < 9; n++)
+	{
+		for(int row = 0; row < 9; row++)
+		{
+			rowNum[0][n][row] = 0;
+			rowNum[1][n][row] = 9;
+		}
+	}
+	for(int n = 0; n < 9; n++)
+	{
+		for(int col = 0; col < 9; col++)
+		{
+			colNum[0][n][col] = 0;
+			colNum[1][n][col] = 9;
+		}
+	}
+	for(int row = 0; row < 9; row++)
+	{
+		for(int col = 0; col < 9; col++)
+		{
+			cellNum[0][row][col] = 0;
+			cellNum[1][row][col] = 9;
+		}
+	}
 }
 
 void Sudoku::giveQuestion()
@@ -86,34 +121,97 @@ void Sudoku::solve()
 }
 int Sudoku::setTrue(int n, int row, int col)
 {
+	int boxRow = (row / 3);
+	int boxCol = (col / 3);
+	
 	//self
 	map[row][col] = n;
-	if(bitmap[n][row][col] == -1) bitmap[n][row][col] = 1;
+	if(bitmap[n][row][col] == -1)
+	{
+		bitmap[n][row][col] = 1;
+		--boxNum[1][n][boxRow][boxCol];
+		--rowNum[1][n][row];
+		--colNum[1][n][col];
+		--cellNum[1][row][col];
+	}
 	else return 0;
 	//column
 	for(int i = 0; i < 9; i++)
 		if(bitmap[n][i][col] == -1)
+		{
 			bitmap[n][i][col] = 0;
+			++boxNum[0][n][i/3][boxCol];
+			--boxNum[1][n][i/3][boxCol];
+			++rowNum[0][n][i];
+			--rowNum[1][n][i];
+			++colNum[0][n][col];
+			--colNum[1][n][col];
+			++cellNum[0][i][col];
+			--cellNum[1][i][col];
+		}
 	//row
 	for(int j = 0; j < 9; j++)
 		if(bitmap[n][row][j] == -1)
+		{
 			bitmap[n][row][j] = 0;
+			++boxNum[0][n][boxRow][j/3];
+			--boxNum[1][n][boxRow][j/3];
+			++rowNum[0][n][row];
+			--rowNum[1][n][row];
+			++colNum[0][n][j];
+			--colNum[1][n][j];
+			++cellNum[0][row][j];
+			--cellNum[1][row][j];
+		}
 	//box
-	int boxRow = (row / 3);
-	int boxCol = (col / 3);
 	for(int i = boxRow * 3; i < boxRow * 3 + 3; i++)
 		for(int j = boxCol * 3; j < boxCol * 3 + 3; j++)
 			if(bitmap[n][i][j] == -1)
+			{
 				bitmap[n][i][j] = 0;
+				++boxNum[0][n][boxRow][boxCol];
+				--boxNum[1][n][boxRow][boxCol];
+				++rowNum[0][n][i];
+				--rowNum[1][n][i];
+				++colNum[0][n][j];
+				--colNum[1][n][j];
+				++cellNum[0][i][j];
+				--cellNum[1][i][j];
+			}
 	//cell
 	for(int k = 0; k < 9; k++)
-		if(bitmap[k][row][col] == -1) bitmap[k][row][col] = 0;
+		if(bitmap[k][row][col] == -1)
+		{
+			bitmap[k][row][col] = 0;
+			++boxNum[0][k][boxRow][boxCol];
+			--boxNum[1][k][boxRow][boxCol];
+			++rowNum[0][k][row];
+			--rowNum[1][k][row];
+			++colNum[0][k][col];
+			--colNum[1][k][col];
+			++cellNum[0][row][col];
+			--cellNum[1][row][col];
+		}
 	return 1;
 }
 int Sudoku::setFalse(int n, int row, int col)
 {
+	int boxRow = (row / 3);
+	int boxCol = (col / 3);
+	
 	//self
-	if(bitmap[n][row][col] == -1) bitmap[n][row][col] = 0;
+	if(bitmap[n][row][col] == -1)
+	{
+		bitmap[n][row][col] = 0;
+		++boxNum[0][n][boxRow][boxCol];
+		--boxNum[1][n][boxRow][boxCol];
+		++rowNum[0][n][row];
+		--rowNum[1][n][row];
+		++colNum[0][n][col];
+		--colNum[1][n][col];
+		++cellNum[0][row][col];
+		--cellNum[1][row][col];
+	}
 	else return 0;
 	return 1;
 }
@@ -198,10 +296,7 @@ int Sudoku::backtracking(Sudoku & thisSudoku)
 								thisSudoku = su; //give the trail result to the original one
 								return 1; //up to now, this sudoku has one solution
 								break;
-							case 1:
-								return 2; //this sudoku has two or more solutions
-								break;
-							case 2:
+							default:
 								return 2; //this sudoku has two or more solutions
 								break;
 						}
@@ -219,29 +314,33 @@ int Sudoku::backtracking(Sudoku & thisSudoku)
 
 int Sudoku::getRowNum(int N, int n, int row)
 {
-	int rowNum = 0;
+	/*int rowNum = 0;
 	for(int j = 0; j < 9; j++) if(bitmap[n][row][j] == N) rowNum++;
-	return rowNum;
+	return rowNum;*/
+	return rowNum[-N][n][row];
 }
 int Sudoku::getColNum(int N, int n, int col)
 {
-	int colNum = 0;
+	/*int colNum = 0;
 	for(int i = 0; i < 9; i++) if(bitmap[n][i][col] == N) colNum++;
-	return colNum;
+	return colNum;*/
+	return colNum[-N][n][col];
 }
 int Sudoku::getBoxNum(int N, int n, int boxRow, int boxCol)
 {
-	int boxNum = 0;
+	/*int boxNum = 0;
 	for(int i = boxRow * 3; i < boxRow * 3 + 3; i++)
 		for(int j = boxCol * 3; j < boxCol * 3 + 3; j++)
 			if(bitmap[n][i][j] == N) boxNum++;
-	return boxNum;
+	return boxNum;*/
+	return boxNum[-N][n][boxRow][boxCol];
 }
 int Sudoku::getCellNum(int N, int row, int col)
 {
-	int cellNum = 0;
+	/*int cellNum = 0;
 	for(int n = 0; n < 9; n++) if(bitmap[n][row][col] == N) cellNum++;
-	return cellNum;
+	return cellNum;*/
+	return cellNum[-N][row][col];
 }
 int Sudoku::getPossible()
 {

@@ -38,5 +38,10 @@ class Sudoku
 		signed char map[9][9];  //-1:unset ; 0~8:number
 		bool visited[729];
 		
+		signed char boxNum[2][9][3][3];  //[0:false, 1:unset][num][boxRow][boxCol]
+		signed char rowNum[2][9][9];  //[0:false, 1:unset][num][row]
+		signed char colNum[2][9][9];  //[0:false, 1:unset][num][col]
+		signed char cellNum[2][9][9];  //[0:false, 1:unset][row][col]
+		
 		Clock timmer;
 };
